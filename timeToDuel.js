@@ -22,7 +22,10 @@ class Unit extends Card {
 
     attack(target) {
         //reduce target res by power
+        target.printStats();
+        console.log(`${this.name} attacks ${target.name} for - ${this.power} on Res: ${target.res}`);
         target.res -= this.power;
+        target.printStats();
     }
 }
 
@@ -40,21 +43,38 @@ class Effect extends Card {
 
     play(target) {
         if (target instanceof Unit) {
-            target.stat += target.mag;
-            console.log("${this.name} plays ${this.text} on ${target.name}.")
+            if (this.stat == "res"){
+                target.res += this.mag;
+            } else if (this.stat ==  "power"){
+                target.power += this.mag;
+            }
+            console.log(`${this.name} plays ${this.text} on ${target.name}.`);
+            target.printStats();
         } else {
-            throw new Error("Target must be a unit!")
+            throw new Error("Target must be a unit!");
         }
     }
 }
 
-const redBeltNinja = new Card("Red Belt Ninja", 3, 3, 4);
+const redBeltNinja = new Unit("Red Belt Ninja", 3, 3, 4);
 redBeltNinja.printStats();
 
-const hardAlgorithm = new Effect("Hard Algorithm", 2, "increase target's strength resilience by 3", "resilience", +3);
+const hardAlgorithm = new Effect("Hard Algorithm", 2, "increase target's resilience by 3", "res", +3);
 hardAlgorithm.printStats();
 
 hardAlgorithm.play(redBeltNinja);
-redBeltNinja.printStats();
 
-const blackBeltNinja = new Card("Black Belt Ninja", 3, 3, 4);
+const blackBeltNinja = new Unit("Black Belt Ninja", 4, 5, 4);
+blackBeltNinja.printStats();
+
+const unhandledPromiseRejection = new Effect("Unhandled Promise Rejection", 1, "reduce target's resilience by 2", "res", -2);
+unhandledPromiseRejection.printStats();
+
+unhandledPromiseRejection.play(redBeltNinja);
+
+const pairProgramming = new Effect("Pair Programming", 3, "increase target's power by 2", "power", +2);
+pairProgramming.printStats();
+
+pairProgramming.play(redBeltNinja);
+
+redBeltNinja.attack(blackBeltNinja);
